@@ -128,6 +128,9 @@
 
     /* ─── MARQUEE ─── */
     .marquee-wrap {
+      position: fixed;
+      left: 0; right: 0;
+      z-index: 99; /* just below nav (100) */
       overflow: hidden;
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
@@ -1036,7 +1039,7 @@
   </nav>
 
   <!-- ─── MARQUEE ─── -->
-  <div class="marquee-wrap" style="margin-top: 61px;">
+  <div class="marquee-wrap" id="marqueeBar">
     <div class="marquee-track">
       <!-- repeated twice for seamless loop -->
       <div class="marquee-item"><span class="dot"></span>Women's Professional Football</div>
@@ -1440,6 +1443,28 @@
 
   <!-- ─── SCROLL ANIMATIONS + PARALLAX ENGINE ─── -->
   <script>
+    /* ── Position marquee flush below nav, offset hero ── */
+    function positionBars() {
+      const nav     = document.querySelector('nav');
+      const marquee = document.getElementById('marqueeBar');
+      const hero    = document.querySelector('.hero');
+      if (!nav || !marquee) return;
+
+      const navH     = nav.getBoundingClientRect().height;
+      const marqueeH = marquee.getBoundingClientRect().height;
+
+      // Snap marquee immediately below nav
+      marquee.style.top = navH + 'px';
+
+      // Push the hero down so it starts below both bars
+      if (hero) hero.style.marginTop = (navH + marqueeH) + 'px';
+    }
+
+    // Run on load and whenever fonts/images finish rendering
+    window.addEventListener('load', positionBars);
+    window.addEventListener('resize', positionBars);
+    positionBars(); // immediate best-effort run
+
     /* ── Fade-up on scroll ── */
     const fadeObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
